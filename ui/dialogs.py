@@ -32,18 +32,18 @@ class AddCompanyDialog(BaseDialog):
         layout.addWidget(self.address_input)
         
         # Botones
-        button_layout = QHBoxLayout()
-        btn_save = StyledButton("Guardar", "success")
-        btn_cancel = StyledButton("Cancelar")
-        btn_cancel.apply_style("primary")
+        buttons_layout = QHBoxLayout()
+        button_save = StyledButton("Guardar", "success")
+        button_cancel = StyledButton("Cancelar")
+        button_cancel.apply_style("primary")
         
-        btn_save.clicked.connect(self.save_company)
-        btn_cancel.clicked.connect(self.reject)
+        button_save.clicked.connect(self.save_company)
+        button_cancel.clicked.connect(self.reject)
         
-        button_layout.addWidget(btn_save)
-        button_layout.addWidget(btn_cancel)
+        buttons_layout.addWidget(button_save)
+        buttons_layout.addWidget(button_cancel)
         
-        layout.addLayout(button_layout)
+        layout.addLayout(buttons_layout)
         self.setLayout(layout)
     
     def save_company(self):
@@ -103,18 +103,18 @@ class AddEmployeeDialog(BaseDialog):
         layout.addWidget(self.position_input)
         
         # Botones
-        button_layout = QHBoxLayout()
-        btn_save = StyledButton("Guardar", "success")
-        btn_cancel = StyledButton("Cancelar")
-        btn_cancel.apply_style("primary")
+        buttons_layout = QHBoxLayout()
+        button_save = StyledButton("Guardar", "success")
+        button_cancel = StyledButton("Cancelar")
+        button_cancel.apply_style("primary")
         
-        btn_save.clicked.connect(self.save_employee)
-        btn_cancel.clicked.connect(self.reject)
+        button_save.clicked.connect(self.save_employee)
+        button_cancel.clicked.connect(self.reject)
         
-        button_layout.addWidget(btn_save)
-        button_layout.addWidget(btn_cancel)
+        buttons_layout.addWidget(button_save)
+        buttons_layout.addWidget(button_cancel)
         
-        layout.addLayout(button_layout)
+        layout.addLayout(buttons_layout)
         self.setLayout(layout)
     
     def save_employee(self):
@@ -215,21 +215,21 @@ class EmailConfigDialog(BaseDialog):
         layout.addWidget(info_label)
         
         # Botones
-        button_layout = QHBoxLayout()
-        btn_test = StyledButton("🧪 Probar Conexión", "primary")
-        btn_save = StyledButton("✅ Guardar", "success")
-        btn_cancel = StyledButton("Cancelar")
-        btn_cancel.apply_style("primary")
+        buttons_layout = QHBoxLayout()
+        button_test_connection = StyledButton("🧪 Probar Conexión", "primary")
+        button_save_config = StyledButton("✅ Guardar", "success")
+        button_cancel = StyledButton("Cancelar")
+        button_cancel.apply_style("primary")
         
-        btn_test.clicked.connect(self.test_connection)
-        btn_save.clicked.connect(self.save_config)
-        btn_cancel.clicked.connect(self.reject)
+        button_test_connection.clicked.connect(self.test_connection)
+        button_save_config.clicked.connect(self.save_config)
+        button_cancel.clicked.connect(self.reject)
         
-        button_layout.addWidget(btn_test)
-        button_layout.addWidget(btn_save)
-        button_layout.addWidget(btn_cancel)
+        buttons_layout.addWidget(button_test_connection)
+        buttons_layout.addWidget(button_save_config)
+        buttons_layout.addWidget(button_cancel)
         
-        layout.addLayout(button_layout)
+        layout.addLayout(buttons_layout)
         self.setLayout(layout)
     
     def test_connection(self):

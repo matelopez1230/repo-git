@@ -87,21 +87,21 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.companies_table)
         
         # Botones
-        button_layout = QHBoxLayout()
-        btn_add = StyledButton("+ Agregar Empresa", "success")
-        btn_edit = StyledButton("✎ Editar", "primary")
-        btn_delete = StyledButton("🗑 Eliminar", "danger")
+        buttons_layout = QHBoxLayout()
+        button_add = StyledButton("+ Agregar Empresa", "success")
+        button_edit = StyledButton("✎ Editar", "primary")
+        button_delete = StyledButton("🗑 Eliminar", "danger")
         
-        btn_add.clicked.connect(self.add_company)
-        btn_edit.clicked.connect(self.edit_company)
-        btn_delete.clicked.connect(self.delete_company)
+        button_add.clicked.connect(self.add_company)
+        button_edit.clicked.connect(self.edit_company)
+        button_delete.clicked.connect(self.delete_company)
         
-        button_layout.addWidget(btn_add)
-        button_layout.addWidget(btn_edit)
-        button_layout.addWidget(btn_delete)
-        button_layout.addStretch()
+        buttons_layout.addWidget(button_add)
+        buttons_layout.addWidget(button_edit)
+        buttons_layout.addWidget(button_delete)
+        buttons_layout.addStretch()
         
-        layout.addLayout(button_layout)
+        layout.addLayout(buttons_layout)
         tab.setLayout(layout)
         return tab
     
@@ -132,21 +132,21 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.employees_table)
         
         # Botones
-        button_layout = QHBoxLayout()
-        btn_add = StyledButton("+ Agregar Empleado", "success")
-        btn_edit = StyledButton("✎ Editar", "primary")
-        btn_delete = StyledButton("🗑 Eliminar", "danger")
+        buttons_layout = QHBoxLayout()
+        button_add_employee = StyledButton("+ Agregar Empleado", "success")
+        button_edit_employee = StyledButton("✎ Editar", "primary")
+        button_delete_employee = StyledButton("🗑 Eliminar", "danger")
         
-        btn_add.clicked.connect(self.add_employee)
-        btn_edit.clicked.connect(self.edit_employee)
-        btn_delete.clicked.connect(self.delete_employee)
+        button_add_employee.clicked.connect(self.add_employee)
+        button_edit_employee.clicked.connect(self.edit_employee)
+        button_delete_employee.clicked.connect(self.delete_employee)
         
-        button_layout.addWidget(btn_add)
-        button_layout.addWidget(btn_edit)
-        button_layout.addWidget(btn_delete)
-        button_layout.addStretch()
+        buttons_layout.addWidget(button_add_employee)
+        buttons_layout.addWidget(button_edit_employee)
+        buttons_layout.addWidget(button_delete_employee)
+        buttons_layout.addStretch()
         
-        layout.addLayout(button_layout)
+        layout.addLayout(buttons_layout)
         tab.setLayout(layout)
         return tab
     
@@ -188,27 +188,27 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.preview_area)
         
         # Botones
-        button_layout = QHBoxLayout()
-        btn_preview = StyledButton("👁 Generar Vista Previa", "primary")
-        btn_copy = StyledButton("📋 Copiar Destinatarios", "success")
-        btn_config_email = StyledButton("⚙️ Configurar Email", "primary")
-        btn_send = StyledButton("📧 Enviar Emails", "success")
-        btn_variables = StyledButton("? Variables", "primary")
+        buttons_layout = QHBoxLayout()
+        button_preview = StyledButton("👁 Generar Vista Previa", "primary")
+        button_copy_recipients = StyledButton("📋 Copiar Destinatarios", "success")
+        button_configure_email = StyledButton("⚙️ Configurar Email", "primary")
+        button_send_emails = StyledButton("📧 Enviar Emails", "success")
+        button_variables_help = StyledButton("? Variables", "primary")
         
-        btn_preview.clicked.connect(self.generate_preview)
-        btn_copy.clicked.connect(self.copy_recipients)
-        btn_config_email.clicked.connect(self.configure_email)
-        btn_send.clicked.connect(self.send_emails)
-        btn_variables.clicked.connect(self.show_variables_help)
+        button_preview.clicked.connect(self.generate_preview)
+        button_copy_recipients.clicked.connect(self.copy_recipients)
+        button_configure_email.clicked.connect(self.configure_email)
+        button_send_emails.clicked.connect(self.send_emails)
+        button_variables_help.clicked.connect(self.show_variables_help)
         
-        button_layout.addWidget(btn_preview)
-        button_layout.addWidget(btn_copy)
-        button_layout.addWidget(btn_config_email)
-        button_layout.addWidget(btn_send)
-        button_layout.addWidget(btn_variables)
-        button_layout.addStretch()
+        buttons_layout.addWidget(button_preview)
+        buttons_layout.addWidget(button_copy_recipients)
+        buttons_layout.addWidget(button_configure_email)
+        buttons_layout.addWidget(button_send_emails)
+        buttons_layout.addWidget(button_variables_help)
+        buttons_layout.addStretch()
         
-        layout.addLayout(button_layout)
+        layout.addLayout(buttons_layout)
         tab.setLayout(layout)
         return tab
     
