@@ -21,6 +21,9 @@
                 </form>
                 <div class="navbar-nav ms-auto">
                     {% if current_user.is_authenticated %}
+                        {% if current_user.profile_pic %}
+                            <img src="{{ current_user.profile_pic }}" alt="Profile" class="rounded-circle me-2" style="width: 40px; height: 40px;">
+                        {% endif %}
                         <span class="navbar-text me-3">Hola, {{ current_user.name }}</span>
                         <a class="nav-link" href="{{ url_for('add_shipment') }}">Agregar Envío</a>
                         <a class="nav-link" href="{{ url_for('logout') }}">Salir</a>

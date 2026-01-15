@@ -36,7 +36,8 @@ def index():
                 company='TransportCo',
                 has_air=True,
                 has_ship=False,
-                has_truck=True
+                has_truck=True,
+                profile_pic='https://via.placeholder.com/40x40?text=Dev'
             )
             db.session.add(dummy_user)
             db.session.commit()
@@ -164,13 +165,13 @@ if __name__ == "__main__":
         db.create_all()
         # Crear usuarios de ejemplo si no existen
         if not User.query.filter_by(email='user1@example.com').first():
-            user1 = User(name='Juan Pérez', email='user1@example.com', company='Logistics SA', has_air=True, has_ship=True, has_truck=False)
+            user1 = User(name='Juan Pérez', email='user1@example.com', company='Logistics SA', has_air=True, has_ship=True, has_truck=False, profile_pic='https://via.placeholder.com/40x40?text=JP')
             db.session.add(user1)
         if not User.query.filter_by(email='user2@example.com').first():
-            user2 = User(name='María García', email='user2@example.com', company='Transportes XYZ', has_air=False, has_ship=True, has_truck=True)
+            user2 = User(name='María García', email='user2@example.com', company='Transportes XYZ', has_air=False, has_ship=True, has_truck=True, profile_pic='https://via.placeholder.com/40x40?text=MG')
             db.session.add(user2)
         if not User.query.filter_by(email='user3@example.com').first():
-            user3 = User(name='Carlos López', email='user3@example.com', company='Global Shipping', has_air=True, has_ship=True, has_truck=True)
+            user3 = User(name='Carlos López', email='user3@example.com', company='Global Shipping', has_air=True, has_ship=True, has_truck=True, profile_pic='https://via.placeholder.com/40x40?text=CL')
             db.session.add(user3)
         db.session.commit()
     app.run(debug=True)
