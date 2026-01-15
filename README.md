@@ -1,32 +1,72 @@
-# Gestor de Empresas y Comunicaciones
+# TransportNet - Red Social de Transportes
 
-Herramienta de escritorio para gestionar empresas, empleados y enviar mensajes personalizados por correo electrónico.
+Plataforma web para conectar transportistas y gestionar envíos de mercaderías con autenticación Google.
 
 ## Características
 
-- **Gestión de Empresas**: CRUD completo para registrar empresas
-- **Gestión de Empleados**: Asociar empleados a empresas con datos de contacto
-- **Plantillas de Mensajes**: Crear plantillas con variables dinámicas
-- **Envío de Email**: Integración con Gmail y Outlook para enviar mensajes personalizados
-- **Interfaz Gráfica**: Aplicación de escritorio con interfaz intuitiva usando PyQt6
+- **Red Social**: Publicaciones y conexiones entre usuarios
+- **Autenticación Google**: Inicio de sesión seguro con OAuth 2.0
+- **Gestión de Envíos**: Registrar mercaderías con volumen, origen, destino y presupuesto
+- **Interfaz Web**: Aplicación moderna usando Flask y Bootstrap
 
 ## Requisitos
 
-- Python 3.13+
-- PyQt6 6.6.1
+- Python 3.8+
+- Flask 2.3+
+- SQLAlchemy
 
 ## Instalación
 
+1. Clona el repositorio
+2. Instala dependencias:
 ```bash
 pip install -r requirements.txt
 ```
 
+3. Configura variables de entorno en `.env`:
+```
+SECRET_KEY=tu-clave-secreta
+GOOGLE_CLIENT_ID=tu-client-id-de-google
+GOOGLE_CLIENT_SECRET=tu-client-secret-de-google
+```
+
+4. Ejecuta la aplicación:
+```bash
+python main.py
+```
+
+## Configuración de Google OAuth
+
+1. Ve a [Google Cloud Console](https://console.cloud.google.com/)
+2. Crea un nuevo proyecto o selecciona uno existente
+3. Habilita la API de Google+ API
+4. Crea credenciales OAuth 2.0
+5. Agrega los orígenes autorizados: `http://localhost:5000`
+6. Agrega los URI de redireccionamiento: `http://localhost:5000/auth/google/callback`
+
 ## Uso
 
-### Inicio de la aplicación
+- Accede a `http://localhost:5000`
+- Inicia sesión con Google
+- Publica en la red social
+- Agrega tus envíos de mercaderías
+
+### Inicio de la aplicación (Local)
 
 ```bash
 python main.py
+```
+
+### Inicio con Docker
+
+```bash
+docker-compose up
+```
+
+O si construiste la imagen manualmente:
+
+```bash
+docker run -e DISPLAY=:0 -v /tmp/.X11-unix:/tmp/.X11-unix gestor-empresas
 ```
 
 La aplicación se divide en 3 pestañas principales:

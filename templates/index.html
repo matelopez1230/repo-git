@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5>¿Qué estás transportando?</h5>
+                <form method="POST" action="{{ url_for('add_post') }}">
+                    <div class="mb-3">
+                        <textarea class="form-control" name="content" rows="3" placeholder="Comparte tus envíos o conecta con otros transportistas..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Publicar</button>
+                </form>
+            </div>
+        </div>
+        
+        <h2>Publicaciones Recientes</h2>
+        {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">{{ post.author.name }}</h5>
+                <p class="card-text">{{ post.content }}</p>
+                <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="col-md-4">
+        <h2>Mis Envíos</h2>
+        {% for shipment in shipments %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <h6>{{ shipment.origin_country }} → {{ shipment.destination_country }}</h6>
+                <p>Volumen: {{ shipment.volume }} L</p>
+                <p>Presupuesto: ${{ shipment.min_budget }} - ${{ shipment.max_budget }}</p>
+                <small class="text-muted">{{ shipment.created_at.strftime('%d/%m/%Y') }}</small>
+            </div>
+        </div>
+        {% endfor %}
+        <a href="{{ url_for('add_shipment') }}" class="btn btn-success">Agregar Envío</a>
+    </div>
+</div>
+{% endblock %}

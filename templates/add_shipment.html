@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block title %}Agregar Envío{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title">Agregar Nuevo Envío</h2>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label for="volume" class="form-label">Volumen (litros)</label>
+                        <input type="number" step="0.01" class="form-control" id="volume" name="volume" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="origin_country" class="form-label">País de Origen</label>
+                        <input type="text" class="form-control" id="origin_country" name="origin_country" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="destination_country" class="form-label">País de Destino</label>
+                        <input type="text" class="form-control" id="destination_country" name="destination_country" required>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="min_budget" class="form-label">Presupuesto Mínimo ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="min_budget" name="min_budget" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="max_budget" class="form-label">Presupuesto Máximo ($)</label>
+                                <input type="number" step="0.01" class="form-control" id="max_budget" name="max_budget" required>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Envío</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
