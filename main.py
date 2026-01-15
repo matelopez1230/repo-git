@@ -4,6 +4,7 @@ from config.database import db
 from models.user import User
 from models.shipment import Shipment
 from models.post import Post
+from models.offer import Offer
 import os
 from dotenv import load_dotenv
 import requests
@@ -22,7 +23,7 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
+    return db.session.get(User, int(user_id))
 
 @app.route('/')
 def index():
@@ -34,6 +35,7 @@ def index():
                 name='Desarrollador',
                 email='dev@example.com',
                 company='TransportCo',
+                country='Argentina',
                 has_air=True,
                 has_ship=False,
                 has_truck=True,
@@ -103,7 +105,9 @@ def auth_google_callback():
             google_id=user_info['id'],
             name=user_info['name'],
             email=user_info['email'],
-            profile_pic=user_info.get('picture', '')
+            profile_pic=user_info.get('picture', ''),
+            company='Usuario Google',
+            country='Desconocido'
         )
         db.session.add(user)
         db.session.commit()
@@ -113,6 +117,23 @@ def auth_google_callback():
 
 @app.route('/add_shipment', methods=['GET', 'POST'])
 def add_shipment():
+    if not current_user.is_authenticated:
+        # Usuario dummy para desarrollo
+        dummy_user = User.query.filter_by(email='dev@example.com').first()
+        if not dummy_user:
+            dummy_user = User(
+                name='Desarrollador',
+                email='dev@example.com',
+                company='TransportCo',
+                has_air=True,
+                has_ship=False,
+                has_truck=True,
+                profile_pic='https://via.placeholder.com/40x40?text=Dev'
+            )
+            db.session.add(dummy_user)
+            db.session.commit()
+        login_user(dummy_user)
+    
     if request.method == 'POST':
         volume = request.form['volume']
         origin_country = request.form['origin_country']
@@ -130,11 +151,35 @@ def add_shipment():
         )
         db.session.add(shipment)
         db.session.commit()
+        
+        # Crear post automático con info del envío
+        post_content = f"🚛 Nuevo envío: {volume}L de {origin_country} a {destination_country}. Presupuesto: ${min_budget} - ${max_budget}"
+        post = Post(content=post_content, user_id=current_user.id, shipment_id=shipment.id)
+        db.session.add(post)
+        db.session.commit()
+        
         return redirect(url_for('index'))
     return render_template('add_shipment.html')
 
 @app.route('/add_post', methods=['POST'])
 def add_post():
+    if not current_user.is_authenticated:
+        # Usuario dummy para desarrollo
+        dummy_user = User.query.filter_by(email='dev@example.com').first()
+        if not dummy_user:
+            dummy_user = User(
+                name='Desarrollador',
+                email='dev@example.com',
+                company='TransportCo',
+                has_air=True,
+                has_ship=False,
+                has_truck=True,
+                profile_pic='https://via.placeholder.com/40x40?text=Dev'
+            )
+            db.session.add(dummy_user)
+            db.session.commit()
+        login_user(dummy_user)
+    
     content = request.form['content']
     if content:
         post = Post(content=content, user_id=current_user.id)
@@ -155,23 +200,51 @@ def search_users():
         users = []
     return render_template('search_users.html', users=users, query=query)
 
-@app.route('/user/<int:user_id>')
-def user_profile(user_id):
-    user = User.query.get_or_404(user_id)
-    return render_template('user_profile.html', user=user)
+@app.route('/shipment/<int:shipment_id>')
+def shipment_detail(shipment_id):
+    shipment = Shipment.query.get_or_404(shipment_id)
+    offers = Offer.query.filter_by(shipment_id=shipment_id).order_by(Offer.created_at.desc()).all()
+    last_offer = offers[0] if offers else None
+    return render_template('shipment_detail.html', shipment=shipment, offers=offers, last_offer=last_offer)
+
+@app.route('/make_offer/<int:shipment_id>', methods=['POST'])
+def make_offer(shipment_id):
+    if not current_user.is_authenticated:
+        # Auto-login dummy
+        dummy_user = User.query.filter_by(email='dev@example.com').first()
+        if not dummy_user:
+            dummy_user = User(
+                name='Desarrollador',
+                email='dev@example.com',
+                company='TransportCo',
+                country='Argentina',
+                has_air=True,
+                has_ship=False,
+                has_truck=True,
+                profile_pic='https://via.placeholder.com/40x40?text=Dev'
+            )
+            db.session.add(dummy_user)
+            db.session.commit()
+        login_user(dummy_user)
+    
+    amount = float(request.form['amount'])
+    offer = Offer(shipment_id=shipment_id, user_id=current_user.id, amount=amount)
+    db.session.add(offer)
+    db.session.commit()
+    return redirect(url_for('shipment_detail', shipment_id=shipment_id))
 
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
         # Crear usuarios de ejemplo si no existen
         if not User.query.filter_by(email='user1@example.com').first():
-            user1 = User(name='Juan Pérez', email='user1@example.com', company='Logistics SA', has_air=True, has_ship=True, has_truck=False, profile_pic='https://via.placeholder.com/40x40?text=JP')
+            user1 = User(name='Juan Pérez', email='user1@example.com', company='Logistics SA', country='Chile', has_air=True, has_ship=True, has_truck=False, profile_pic='https://via.placeholder.com/40x40?text=JP')
             db.session.add(user1)
         if not User.query.filter_by(email='user2@example.com').first():
-            user2 = User(name='María García', email='user2@example.com', company='Transportes XYZ', has_air=False, has_ship=True, has_truck=True, profile_pic='https://via.placeholder.com/40x40?text=MG')
+            user2 = User(name='María García', email='user2@example.com', company='Transportes XYZ', country='México', has_air=False, has_ship=True, has_truck=True, profile_pic='https://via.placeholder.com/40x40?text=MG')
             db.session.add(user2)
         if not User.query.filter_by(email='user3@example.com').first():
-            user3 = User(name='Carlos López', email='user3@example.com', company='Global Shipping', has_air=True, has_ship=True, has_truck=True, profile_pic='https://via.placeholder.com/40x40?text=CL')
+            user3 = User(name='Carlos López', email='user3@example.com', company='Global Shipping', country='Colombia', has_air=True, has_ship=True, has_truck=True, profile_pic='https://via.placeholder.com/40x40?text=CL')
             db.session.add(user3)
         db.session.commit()
     app.run(debug=True)

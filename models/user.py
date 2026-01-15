@@ -11,6 +11,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     profile_pic = db.Column(db.String(200))
     company = db.Column(db.String(100))  # Empresa para la que trabaja
+    country = db.Column(db.String(100))  # País del usuario
     has_air = db.Column(db.Boolean, default=False)  # Transporte aéreo
     has_ship = db.Column(db.Boolean, default=False)  # Transporte marítimo
     has_truck = db.Column(db.Boolean, default=False)  # Transporte terrestre

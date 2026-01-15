@@ -10,7 +10,7 @@
                 <h5>¿Qué estás transportando?</h5>
                 <form method="POST" action="{{ url_for('add_post') }}">
                     <div class="mb-3">
-                        <textarea class="form-control" name="content" rows="3" placeholder="Comparte tus envíos o conecta con otros transportistas..."></textarea>
+                        <textarea class="form-control" name="content" rows="3" placeholder="Comparte tus envíos o conecta con otros transportistas..." required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Publicar</button>
                 </form>
@@ -19,15 +19,21 @@
         
         <h2>Publicaciones Recientes</h2>
         {% for post in posts %}
-        <div class="card mb-3">
+        <div class="card mb-3 {% if post.shipment %}border-primary bg-light{% endif %}">
             <div class="card-body">
                 <div class="d-flex align-items-center mb-2">
                     {% if post.author.profile_pic %}
                         <img src="{{ post.author.profile_pic }}" alt="Profile" class="rounded-circle me-2" style="width: 32px; height: 32px;">
                     {% endif %}
                     <h5 class="card-title mb-0">{{ post.author.name }}</h5>
+                    {% if post.shipment %}
+                        <span class="badge bg-primary ms-2">Envío</span>
+                    {% endif %}
                 </div>
                 <p class="card-text">{{ post.content }}</p>
+                {% if post.shipment %}
+                    <a href="{{ url_for('shipment_detail', shipment_id=post.shipment.id) }}" class="btn btn-sm btn-primary">Hacer una oferta</a>
+                {% endif %}
                 <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
             </div>
         </div>

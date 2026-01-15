@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Detalles del Envío{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Detalles del Envío</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Volumen:</strong> {{ shipment.volume }} L</p>
+                            <p><strong>Origen:</strong> {{ shipment.origin_country }}</p>
+                            <p><strong>Destino:</strong> {{ shipment.destination_country }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Presupuesto:</strong> ${{ shipment.min_budget }} - ${{ shipment.max_budget }}</p>
+                            <p><strong>Publicado por:</strong> {{ shipment.user.name }} ({{ shipment.user.company }})</p>
+                            <p><strong>Fecha de publicación:</strong> {{ shipment.created_at.strftime('%d/%m/%Y %H:%M') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h4>Hacer una Oferta</h4>
+                    {% if last_offer %}
+                        <div class="alert alert-info">
+                            <strong>Última oferta:</strong> ${{ last_offer.amount }} por {{ last_offer.user.name }}
+                        </div>
+                        <div class="mb-3">
+                            <strong>Recomendaciones:</strong>
+                            {% if last_offer.amount > shipment.min_budget %}
+                                <span class="text-success">✓ Precio competitivo - considera mantener o bajar ligeramente</span>
+                            {% else %}
+                                <span class="text-warning">⚠ Precio bajo - podrías aumentar para mejor margen</span>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                    
+                    <form method="POST" action="{{ url_for('make_offer', shipment_id=shipment.id) }}">
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Tu Oferta ($)</label>
+                            <input type="number" step="0.01" class="form-control" id="amount" name="amount" 
+                                   value="{% if last_offer %}{{ last_offer.amount }}{% else %}{{ shipment.min_budget }}{% endif %}" required>
+                        </div>
+                        <button type="submit" class="btn btn-success">Enviar Oferta</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Historial de Ofertas (Anónimo)</h5>
+                    {% if offers %}
+                        {% for offer in offers %}
+                        <div class="border-bottom py-2">
+                            <strong>${{ offer.amount }}</strong> desde {{ offer.user.country }}
+                            <small class="text-muted d-block">{{ offer.created_at.strftime('%d/%m/%Y %H:%M') }}</small>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Aún no hay ofertas</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

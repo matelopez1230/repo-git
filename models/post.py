@@ -8,3 +8,6 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.current_timestamp())
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    shipment_id = db.Column(db.Integer, db.ForeignKey('shipment.id'), nullable=True)  # Para posts de envíos
+    
+    # Relaciones
