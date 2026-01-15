@@ -25,23 +25,8 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 @app.route('/')
+@login_required
 def index():
-    if not current_user.is_authenticated:
-        # Usuario dummy para desarrollo
-        dummy_user = User.query.filter_by(email='dev@example.com').first()
-        if not dummy_user:
-            dummy_user = User(
-                name='Desarrollador',
-                email='dev@example.com',
-                company='TransportCo',
-                has_air=True,
-                has_ship=False,
-                has_truck=True
-            )
-            db.session.add(dummy_user)
-            db.session.commit()
-        login_user(dummy_user)
-    
     posts = Post.query.order_by(Post.created_at.desc()).all()
     shipments = Shipment.query.filter_by(user_id=current_user.id).all()
     return render_template('index.html', posts=posts, shipments=shipments)
@@ -111,6 +96,7 @@ def auth_google_callback():
     return redirect(url_for('index'))
 
 @app.route('/add_shipment', methods=['GET', 'POST'])
+@login_required
 def add_shipment():
     if request.method == 'POST':
         volume = request.form['volume']
@@ -133,6 +119,7 @@ def add_shipment():
     return render_template('add_shipment.html')
 
 @app.route('/add_post', methods=['POST'])
+@login_required
 def add_post():
     content = request.form['content']
     if content:
@@ -162,15 +149,4 @@ def user_profile(user_id):
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
-        # Crear usuarios de ejemplo si no existen
-        if not User.query.filter_by(email='user1@example.com').first():
-            user1 = User(name='Juan Pérez', email='user1@example.com', company='Logistics SA', has_air=True, has_ship=True, has_truck=False)
-            db.session.add(user1)
-        if not User.query.filter_by(email='user2@example.com').first():
-            user2 = User(name='María García', email='user2@example.com', company='Transportes XYZ', has_air=False, has_ship=True, has_truck=True)
-            db.session.add(user2)
-        if not User.query.filter_by(email='user3@example.com').first():
-            user3 = User(name='Carlos López', email='user3@example.com', company='Global Shipping', has_air=True, has_ship=True, has_truck=True)
-            db.session.add(user3)
-        db.session.commit()
     app.run(debug=True)
