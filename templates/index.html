@@ -3,6 +3,16 @@
 {% block title %}Inicio{% endblock %}
 
 {% block content %}
+{% if not current_user.is_authenticated %}
+<div class="alert alert-info">
+    <h5>Modo Desarrollo - Login Rápido</h5>
+    <p>Para probar la app, inicia sesión como uno de los usuarios de ejemplo:</p>
+    <a href="{{ url_for('login_as', user_email='user1@example.com') }}" class="btn btn-primary me-2">Login as Juan Pérez (user1)</a>
+    <a href="{{ url_for('login_as', user_email='user2@example.com') }}" class="btn btn-secondary me-2">Login as María García (user2)</a>
+    <a href="{{ url_for('login_as', user_email='user3@example.com') }}" class="btn btn-success">Login as Carlos López (user3)</a>
+</div>
+{% endif %}
+
 <div class="row">
     <div class="col-md-8">
         <div class="card mb-4">
@@ -31,7 +41,7 @@
                     {% endif %}
                 </div>
                 <p class="card-text">{{ post.content }}</p>
-                {% if post.shipment %}
+                {% if post.shipment and post.user_id != current_user.id %}
                     <a href="{{ url_for('shipment_detail', shipment_id=post.shipment.id) }}" class="btn btn-sm btn-primary">Hacer una oferta</a>
                 {% endif %}
                 <small class="text-muted">{{ post.created_at.strftime('%d/%m/%Y %H:%M') }}</small>

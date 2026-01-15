@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from config.database import db
 from models.user import User
@@ -8,6 +8,7 @@ from models.offer import Offer
 import os
 from dotenv import load_dotenv
 import requests
+from services.transport_service import get_transport_options
 
 load_dotenv()
 
@@ -115,37 +116,51 @@ def auth_google_callback():
     login_user(user)
     return redirect(url_for('index'))
 
+@app.route('/login_as/<user_email>')
+def login_as(user_email):
+    user = User.query.filter_by(email=user_email).first()
+    if user:
+        login_user(user)
+    return redirect(url_for('index'))
+
 @app.route('/add_shipment', methods=['GET', 'POST'])
 def add_shipment():
     if not current_user.is_authenticated:
-        # Usuario dummy para desarrollo
-        dummy_user = User.query.filter_by(email='dev@example.com').first()
-        if not dummy_user:
-            dummy_user = User(
-                name='Desarrollador',
-                email='dev@example.com',
-                company='TransportCo',
-                has_air=True,
-                has_ship=False,
+        # Auto-login con user2 para desarrollo
+        user2 = User.query.filter_by(email='user2@example.com').first()
+        if not user2:
+            user2 = User(
+                name='María García',
+                email='user2@example.com',
+                company='Transportes XYZ',
+                country='México',
+                has_air=False,
+                has_ship=True,
                 has_truck=True,
-                profile_pic='https://via.placeholder.com/40x40?text=Dev'
+                profile_pic='https://via.placeholder.com/40x40?text=MG'
             )
-            db.session.add(dummy_user)
+            db.session.add(user2)
             db.session.commit()
-        login_user(dummy_user)
+        login_user(user2)
     
     if request.method == 'POST':
         volume = request.form['volume']
+        transport_mode = request.form['transport_mode']
         origin_country = request.form['origin_country']
         destination_country = request.form['destination_country']
+        origin_port = request.form.get('origin_port')
+        destination_port = request.form.get('destination_port')
         min_budget = request.form['min_budget']
         max_budget = request.form['max_budget']
         
         shipment = Shipment(
             user_id=current_user.id,
             volume=volume,
+            transport_mode=transport_mode,
             origin_country=origin_country,
             destination_country=destination_country,
+            origin_port=origin_port,
+            destination_port=destination_port,
             min_budget=min_budget,
             max_budget=max_budget
         )
@@ -153,7 +168,12 @@ def add_shipment():
         db.session.commit()
         
         # Crear post automático con info del envío
-        post_content = f"🚛 Nuevo envío: {volume}L de {origin_country} a {destination_country}. Presupuesto: ${min_budget} - ${max_budget}"
+        post_content = f"🚛 Nuevo envío: {volume}L de {origin_country} a {destination_country} por {transport_mode}"
+        if origin_port:
+            post_content += f" desde {origin_port}"
+        if destination_port:
+            post_content += f" hasta {destination_port}"
+        post_content += f". Presupuesto: ${min_budget} - ${max_budget}"
         post = Post(content=post_content, user_id=current_user.id, shipment_id=shipment.id)
         db.session.add(post)
         db.session.commit()
@@ -161,24 +181,32 @@ def add_shipment():
         return redirect(url_for('index'))
     return render_template('add_shipment.html')
 
+@app.route('/get_transport_options')
+def get_transport_options_route():
+    mode = request.args.get('mode')
+    country = request.args.get('country')
+    options = get_transport_options(mode, country)
+    return jsonify(options)
+
 @app.route('/add_post', methods=['POST'])
 def add_post():
     if not current_user.is_authenticated:
-        # Usuario dummy para desarrollo
-        dummy_user = User.query.filter_by(email='dev@example.com').first()
-        if not dummy_user:
-            dummy_user = User(
-                name='Desarrollador',
-                email='dev@example.com',
-                company='TransportCo',
-                has_air=True,
-                has_ship=False,
+        # Auto-login con user2
+        user2 = User.query.filter_by(email='user2@example.com').first()
+        if not user2:
+            user2 = User(
+                name='María García',
+                email='user2@example.com',
+                company='Transportes XYZ',
+                country='México',
+                has_air=False,
+                has_ship=True,
                 has_truck=True,
-                profile_pic='https://via.placeholder.com/40x40?text=Dev'
+                profile_pic='https://via.placeholder.com/40x40?text=MG'
             )
-            db.session.add(dummy_user)
+            db.session.add(user2)
             db.session.commit()
-        login_user(dummy_user)
+        login_user(user2)
     
     content = request.form['content']
     if content:
@@ -210,24 +238,33 @@ def shipment_detail(shipment_id):
 @app.route('/make_offer/<int:shipment_id>', methods=['POST'])
 def make_offer(shipment_id):
     if not current_user.is_authenticated:
-        # Auto-login dummy
-        dummy_user = User.query.filter_by(email='dev@example.com').first()
-        if not dummy_user:
-            dummy_user = User(
-                name='Desarrollador',
-                email='dev@example.com',
-                company='TransportCo',
-                country='Argentina',
-                has_air=True,
-                has_ship=False,
+        # Auto-login con user2
+        user2 = User.query.filter_by(email='user2@example.com').first()
+        if not user2:
+            user2 = User(
+                name='María García',
+                email='user2@example.com',
+                company='Transportes XYZ',
+                country='México',
+                has_air=False,
+                has_ship=True,
                 has_truck=True,
-                profile_pic='https://via.placeholder.com/40x40?text=Dev'
+                profile_pic='https://via.placeholder.com/40x40?text=MG'
             )
-            db.session.add(dummy_user)
+            db.session.add(user2)
             db.session.commit()
-        login_user(dummy_user)
+        login_user(user2)
+    
+    shipment = Shipment.query.get_or_404(shipment_id)
+    if shipment.user_id == current_user.id:
+        # No permitir ofertar en tu propio envío
+        return redirect(url_for('shipment_detail', shipment_id=shipment_id))
     
     amount = float(request.form['amount'])
+    if amount < shipment.min_budget or amount > shipment.max_budget:
+        # Oferta fuera de rango, redirigir sin crear
+        return redirect(url_for('shipment_detail', shipment_id=shipment_id))
+    
     offer = Offer(shipment_id=shipment_id, user_id=current_user.id, amount=amount)
     db.session.add(offer)
     db.session.commit()
@@ -247,4 +284,29 @@ if __name__ == "__main__":
             user3 = User(name='Carlos López', email='user3@example.com', company='Global Shipping', country='Colombia', has_air=True, has_ship=True, has_truck=True, profile_pic='https://via.placeholder.com/40x40?text=CL')
             db.session.add(user3)
         db.session.commit()
+        
+        # Crear shipment de ejemplo si no existe
+        if not Shipment.query.first():
+            user1 = User.query.filter_by(email='user1@example.com').first()
+            shipment = Shipment(
+                user_id=user1.id,
+                volume=1000,
+                transport_mode='sea',
+                origin_country='Chile',
+                destination_country='Argentina',
+                origin_port='Port of Valparaiso',
+                destination_port='Port of Buenos Aires',
+                min_budget=500,
+                max_budget=1000
+            )
+            db.session.add(shipment)
+            db.session.commit()
+            
+            post = Post(
+                content="🚛 Nuevo envío: 1000L de Chile a Argentina por Mar desde Port of Valparaiso hasta Port of Buenos Aires. Presupuesto: $500 - $1000",
+                user_id=user1.id,
+                shipment_id=shipment.id
+            )
+            db.session.add(post)
+            db.session.commit()
     app.run(debug=True)

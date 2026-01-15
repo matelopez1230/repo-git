@@ -14,12 +14,33 @@
                         <input type="number" step="0.01" class="form-control" id="volume" name="volume" required>
                     </div>
                     <div class="mb-3">
+                        <label for="transport_mode" class="form-label">Medio de Transporte</label>
+                        <select class="form-control" id="transport_mode" name="transport_mode" required>
+                            <option value="">Seleccionar medio...</option>
+                            <option value="land">Tierra</option>
+                            <option value="air">Aire</option>
+                            <option value="sea">Mar</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="origin_country" class="form-label">País de Origen</label>
                         <input type="text" class="form-control" id="origin_country" name="origin_country" required>
                     </div>
                     <div class="mb-3">
+                        <label for="origin_port" class="form-label">Terminal/Puerto de Origen</label>
+                        <select class="form-control" id="origin_port" name="origin_port">
+                            <option value="">Seleccionar terminal...</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
                         <label for="destination_country" class="form-label">País de Destino</label>
                         <input type="text" class="form-control" id="destination_country" name="destination_country" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="destination_port" class="form-label">Terminal/Puerto de Destino</label>
+                        <select class="form-control" id="destination_port" name="destination_port">
+                            <option value="">Seleccionar terminal...</option>
+                        </select>
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -41,4 +62,49 @@
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const transportMode = document.getElementById('transport_mode');
+    const originCountry = document.getElementById('origin_country');
+    const destinationCountry = document.getElementById('destination_country');
+    const originPort = document.getElementById('origin_port');
+    const destinationPort = document.getElementById('destination_port');
+
+    function loadPorts(selectElement, mode, country) {
+        if (!mode || !country) {
+            selectElement.innerHTML = '<option value="">Seleccionar terminal...</option>';
+            return;
+        }
+        fetch(`/get_transport_options?mode=${mode}&country=${encodeURIComponent(country)}`)
+            .then(response => response.json())
+            .then(data => {
+                selectElement.innerHTML = '<option value="">Seleccionar terminal...</option>';
+                data.forEach(option => {
+                    const opt = document.createElement('option');
+                    opt.value = option.name;
+                    opt.textContent = option.name;
+                    selectElement.appendChild(opt);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading ports:', error);
+            });
+    }
+
+    transportMode.addEventListener('change', function() {
+        const mode = this.value;
+        loadPorts(originPort, mode, originCountry.value);
+        loadPorts(destinationPort, mode, destinationCountry.value);
+    });
+
+    originCountry.addEventListener('input', function() {
+        loadPorts(originPort, transportMode.value, this.value);
+    });
+
+    destinationCountry.addEventListener('input', function() {
+        loadPorts(destinationPort, transportMode.value, this.value);
+    });
+});
+</script>
 {% endblock %}
